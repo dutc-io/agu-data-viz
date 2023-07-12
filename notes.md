@@ -4,6 +4,22 @@
 print("Let's Get Started")
 ```
 
+## If Running From Google Colab
+
+Execute these cells to access the `data` for this workshop and install some additional packages.
+
+```python
+!git clone https://github.com/dutc-io/agu-data-viz.git
+```
+
+```python
+%cd agu-data-viz
+```
+
+```python
+!pip install ipyvizzu==0.15.0
+```
+
 ## Types of Visualizations
 - Exploratory
 - Communicative
