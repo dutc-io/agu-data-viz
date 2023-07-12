@@ -10,11 +10,13 @@ In order to follow along with today’s presentation we have provided 2 options 
 ## 1. Google Colab
 
 Google Colab is an online notebook-style editor for you to interactively run Python code in.
-In order to get started with Google Colab, you may use the following link:
+In order to get started with Google Colab, you may use the below link:
+
+*Note* that you will need to sign into your Google Account.
 
 https://colab.research.google.com/github/dutc-io/agu-data-viz/blob/main/notes.ipynb
 
-Make sure the execute the cells under the **If Running From Google Colab** Section!
+Make sure the execute the cells under the **If Running From Google Colab** Section! (This will prompt you to sign into your Google Account if you are not already)
 
 ## 2. Git & Anaconda
 
