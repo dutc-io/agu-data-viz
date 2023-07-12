@@ -53,14 +53,6 @@ from pandas import read_csv
 from matplotlib.pyplot import subplots, show
 
 anscombe = read_csv('data/anscombe.csv')
-
-fig, axes = subplots(2, 2, sharex=True, sharey=True)
-for (label, group), ax in zip(anscombe.groupby('id'), axes.flat):
-    ax.scatter(group['x'], group['y'], s=8)
-    ax.set_title(label)
-
-fig.suptitle('Anscombe’s Quartet', size='x-large')
-show()
 ```
 
 ### High Level - Declarative
@@ -71,17 +63,6 @@ from plotnine import ggplot, facet_wrap, geom_point, geom_smooth, labs, theme_mi
 from pandas import read_csv
 
 anscombe = read_csv('data/anscombe.csv')
-
-(
-    ggplot(anscombe, aes(x='x', y='y'))
-    + facet_wrap('id', ncol=2)
-    + geom_point()
-    + geom_smooth(method='ols')
-    + labs(x='x variable', y='y variable', title='Anscombe’s Quartet')
-    + theme_minimal()
-).draw()
-
-show()
 ```
 
 ### High Level - Convenience
@@ -92,12 +73,6 @@ from seaborn import lmplot
 from pandas import read_csv
 
 anscombe = read_csv('data/anscombe.csv')
-
-lmplot(
-    anscombe, x='x', y='y', col='id', col_wrap=2,
-)
-
-show()
 ```
 
 ```python
@@ -105,13 +80,6 @@ from seaborn.objects import Plot, Dots, PolyFit, Line
 from pandas import read_csv
 
 anscombe = read_csv('data/anscombe.csv')
-
-(
-    Plot(anscombe, x='x', y='y')
-    .facet(col='id', wrap=2)
-    .add(Dots(color='black'))
-    .add(Line(), PolyFit(1))
-).show()
 ```
 
 ### Is it worth it to learn multiple data visualization libraries/languages?
@@ -130,6 +98,10 @@ fig = figure(figsize=(6,6))
 
 c = Circle((.5, .8), .1)
 fig.add_artist(c)
+
+## uncomment below if running from Jupyter Notebook/Google Colab
+# ax = fig.add_axes([0, 0, 0, 0])
+# ax.set_visible(False)
 
 # body_rect = Rectangle((.47, .75), .06, -.5)
 # fig.add_artist(body_rect)
@@ -188,7 +160,7 @@ fig, ax = subplots()
 show()
 ```
 
-- Object oriented
+Matplotlib is object oriented
 - Containers → Artists
 - Figure → Axes →
     - X/YAxis
@@ -226,42 +198,9 @@ df = (
     .sort_index()
 )
 
-smooth_data = (
-    df
-    .groupby(['date', 'player'])['faults'].sum(numeric_only=True)
-    .unstack(['player'])
-    .rolling('90D').mean()
+plot_data = (
+    df.pivot_table(index='date', columns='player', values='faults', aggfunc='sum')
 )
-
-ax = smooth_data.plot(legend=False)
-ax.set_title('Galaxy Wide Fuel Quality Issues Spiked Engine Faults', loc='left', size='x-large')
-
-for line in ax.lines:
-    x, y = line.get_data()
-    ax.annotate(
-        line.get_label(), xy=(x[-1], y[-1]),
-        xytext=(5, 0), textcoords='offset points',
-        color=line.get_color(),
-        va='center'
-    )
-
-ax.spines[['right', 'top']].set_visible(False)
-
-from matplotlib.ticker import NullLocator
-ax.xaxis.set_minor_locator(NullLocator())
-ax.set_ylabel('Engine Faults', size='large')
-ax.set_xlabel('')
-
-from matplotlib.dates import date2num
-rect = ax.axvspan(xmin=to_datetime('2024-04-01'), xmax=to_datetime('2024-07-04'), ymin=0, ymax=1, color='gainsboro', alpha=.9, zorder=0)
-ax.annotate(
-    'Galaxy-wide fuel quality issue',
-    xy=(date2num(to_datetime('2024-07-04')), .95), xycoords=ax.get_xaxis_transform(),
-	xytext=(5, 0), textcoords='offset points'
-)
-
-ax.figure.tight_layout()
-show()
 ```
 
 ### Interactive Data Visualizations (explore, fun)
@@ -275,20 +214,15 @@ show()
 **bokeh & panel** - a powerful way to share your data on the web!
 
 ```python
-from panel import Column, bind, Row, extension, Spacer
-from panel.widgets import FloatSlider, Button
+from panel import Column, extension
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource
 
 from numpy import linspace, zeros
 from scipy.stats import skewnorm
 
-css = '''
-.bk-root .bk, .bk-root .bk:before, .bk-root .bk:after {
-  font-size: 110%;
-  }
-'''
-extension(raw_css=[css])
+# Connect `panel` application to notebook runtime
+extension()
 
 loc   = 0
 scale = 1
@@ -315,14 +249,15 @@ Column(p).servable()
 adding interactivity
 
 ```python
-from panel import Column, bind, Row, extension, Spacer
-from panel.widgets import FloatSlider, Button
+from panel import Column, bind, extension
+from panel.widgets import FloatSlider
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource
 
 from numpy import linspace, zeros
 from scipy.stats import skewnorm
 
+# Increase font size of widgets
 css = '''
 .bk-root .bk, .bk-root .bk:before, .bk-root .bk:after {
   font-size: 110%;
@@ -370,44 +305,12 @@ df = (
     )
 ).loc['1990':'2000']
 
-from bokeh.plotting import figure, ColumnDataSource
-from panel import Column, bind
-from panel.widgets import IntSlider
-from pandas import to_datetime, DateOffset
+# Long timeseries Zoom
 
-cds = ColumnDataSource(df)
 
-p = figure(width=1000, height=250, x_axis_type='datetime', y_range=[0, 110], x_range=[df.index.min(), df.index.min() + DateOffset(years=1, days=-1)])
-p.vbar(x='date', bottom='temperature_min', top='temperature_max', source=cds, width=24 * 60 * 60 * 900)
-# p.varea(x='date', y1='temperature_min', y2='temperature_max', source=cds)
 
-# slider = IntSlider(start=int(df.index.year.min()), end=int(df.index.year.max()))
-# def update_data(year):
-#     # new_data = df.loc[f'{year}'].reset_index().to_dict('list')
-#     # cds.data.update(new_data)
-#     p.x_range.start = to_datetime(f'{year}-01-01')
-#     p.x_range.end = to_datetime(f'{year}-12-31')
+# dropdown planet selector
 
-from bokeh.models import RangeTool
-
-range_p = figure(
-    height=p.height // 4, width=p.width, y_range=p.y_range, x_range=[df.index.min(), df.index.max()],
-    x_axis_type="datetime", toolbar_location=None
-)
-range_p.vbar(x='date', bottom='temperature_min', top='temperature_max', source=cds, width=24 * 60 * 60 * 900)
-
-from bokeh.models import AdaptiveTicker
-range_p.yaxis.ticker = AdaptiveTicker(desired_num_ticks=2, num_minor_ticks=0)
-# range_p.varea(x='date', y1='temperature_min', y2='temperature_max', source=cds)
-
-rangetool = RangeTool(x_range=p.x_range)
-range_p.add_tools(rangetool)
-
-Column(
-    p,
-    range_p,
-    # bind(update_data, slider),
-) .servable()
 ```
 
 ### Animated Data Visualizations (communicative, fun)
@@ -415,12 +318,9 @@ Column(
 **ipyvizzu**
 
 ```python
-import panel as pn
 from panel.pane import Markdown, HTML
 from pandas import read_csv, MultiIndex
 from ipyvizzu import Chart, Data, Config, Style, DisplayTarget
-
-from numpy import arange, linspace, concatenate
 
 countries = (
     read_csv('data/dictionary.csv')
@@ -479,60 +379,59 @@ chart.animate(
     Config(config | {'title': 'United States Leads Summer Olympic Medals'}),
 )
 
-filt = '||'.join(
-    f"record.Country == '{c}'"
-    for c in countries_min
-)
+# filt = '||'.join(
+#     f"record.Country == '{c}'"
+#     for c in countries_min
+# )
+# chart.animate(
+#     Config({
+#         'title': 'Countries Winning > 80 Summer Olympic Medals',
+#     }),
+#     Data.filter(filt),
+#     delay=2,
+# 	duration=4,
+# )
 
-chart.animate(
-    Config({
-        'title': 'Countries Winning > 80 Summer Olympic Medals',
-    }),
-    Data.filter(filt),
-    delay=2,
-	duration=4,
-)
+# for i, (year, group) in enumerate(medals_count.groupby('Year')):
+#     title = 'Summer Olympic Medals 1896'
+#     if year != '1896':
+#         title += f' - {year}'
+#     chart.animate(
+#         Data.filter(
+#             f'record.Year == {year} && ({filt})'
+#         ),
+#         Config(
+#             config |
+#             {'title': title, 'x': 'Cumulative Medals'}
+#         ),
+# 		delay=4 if i == 0 else 0,
+#         duration=1,
+#         x={"easing": "linear", "delay": 0},
+#         y={"delay": 0},
+#         show={"delay": 0},
+#         hide={"delay": 0},
+#         title={"duration": 0, "delay": 0},
+#     )
 
-for i, (year, group) in enumerate(medals_count.groupby('Year')):
-    title = 'Summer Olympic Medals 1896'
-    if year != '1896':
-        title += f' - {year}'
-    chart.animate(
-        Data.filter(
-            f'record.Year == {year} && ({filt})'
-        ),
-        Config(
-            config |
-            {'title': title, 'x': 'Cumulative Medals'}
-        ),
-		delay=4 if i == 0 else 0,
-        duration=1,
-        x={"easing": "linear", "delay": 0},
-        y={"delay": 0},
-        show={"delay": 0},
-        hide={"delay": 0},
-        title={"duration": 0, "delay": 0},
-    )
+# # Zoom Out
+# chart.animate(
+#     Data.filter(None),
+#     Config({
+#         'title': 'Summer Olympic Medals up to 2012',
+#         'x': 'Total Medals',
+#     }),
+#     duration=3
+# )
 
-# Zoom Out
-chart.animate(
-    Data.filter(None),
-    Config({
-        'title': 'Summer Olympic Medals up to 2012',
-        'x': 'Total Medals',
-    }),
-    duration=3
-)
-
-chart.animate(
-    Data.filter('''
-        record.Country == 'United States'
-        || record.Country == 'United Kingdom'
-        || record.Country == 'France'
-        || record.Country == 'Italy'
-    '''),
-    Config({'title': 'Select Countries'}),
-)
+# chart.animate(
+#     Data.filter('''
+#         record.Country == 'United States'
+#         || record.Country == 'United Kingdom'
+#         || record.Country == 'France'
+#         || record.Country == 'Italy'
+#     '''),
+#     Config({'title': 'Select Countries'}),
+# )
 
 HTML(chart).servable()
 ```
@@ -556,51 +455,9 @@ df = (
         doy=lambda d: d.index.dayofyear.astype(str),
     )
     .sort_index()
-).groupby('year')['temperature_max'].mean().reset_index()
+).loc['1990':'2000']
 
-yr_start, yr_stop = df.year.min(), df.year.max()
-df = df.astype({'year': str})
-
-data = Data()
-data.add_data_frame(df)
-
-config = {
-	'channels':{
-    	'y': {'set': 'temperature_max', 'range': {'min': 50, 'max': '75'}},
-    	# 'x': {'set': 'doy', 'range': {'min': '0', 'max': '366'},},
-    	'x': {'set': 'year'} #, 'range': {'min': str(yr_start), 'max': str(yr_stop)},},
-	},
-	'geometry': 'line'
-}
-
-chart = Chart(
-    width="800px", height="600px",
-    display=DisplayTarget.MANUAL
-)
-
-method = """
-	console.log(event.data);
-	let doy = parseFloat(event.data.text);
-	if (!event.data.text.includes("$") && !isNaN(doy) && doy % 5 != 0)
-		event.preventDefault();
-"""
-handler = chart.on("plot-axis-label-draw", method)
-chart.on('logo-draw', 'event.preventDefault();')
-chart.animate(
-    data,
-    Config(config | {'title': 'Slight Increase in Average Temperature'}),
-)
-for year in range(yr_start, yr_stop+1):
-	# chart.animate(
-	# 	data.filter(f'record.year == {year}'),
-	# 	Config({'title': f'York Temperatures {year}'}),
-        # duration=4,
-	# )
-	chart.animate(
-		data.filter(f'parseInt(record.year) <= {year}'),
-		# Config({'title': f'York Temperatures {year}'}),
-		duration=.3
-	)
+# Animate the annual weather curve
 
 HTML(chart).servable()
 ```
