@@ -18,16 +18,29 @@ https://colab.research.google.com/github/dutc-io/agu-data-viz/blob/main/notes.ip
 
 Make sure the execute the cells under the **If Running From Google Colab** Section! (This will prompt you to sign into your Google Account if you are not already)
 
-## 2. Git & Anaconda
+**If you want to SAVE your notes/code from today, make sure to download your notebook from Google Colab!**
+
+## 2. Git & Anaconda (advanced)
+
+For the purposes of this workshop, using Google Colab will be faster. I would
+only advocate for this approach if you are familiar with these tools.
 
 If you have working knowledge of `git` and `conda`, then you can locally clone the github repository and
 create a conda virtual environment from the `environment.yml` file.
 
 Start a new Terminal session and run the following commands
 
+*Note: The environment will take a few minutes to resolve!*
+
 ```bash
 git clone https://github.com/dutc-io/agu-data-viz.git
 cd agu-data-viz
-conda env create -f environment.yml
+conda env create -f environment.yml  # this step can take a while!
 conda activate agu-data-viz-02
+jupyter lab
 ```
+
+To open the jupyter lab interface in your browser, copy/paste `http://localhost:...` link
+from your terminal’s output into your browser and hit <kbd>Enter</kbd>.
+
+
