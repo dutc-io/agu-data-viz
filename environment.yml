@@ -1,4 +1,4 @@
-name: agu-data-viz-02
+name: agu-data-viz
 channels:
   - conda-forge
   - defaults
