@@ -1,5 +1,14 @@
 # How do I even get started with Data Visualization?
 
+## Agenda
+
+0. Why bother with programmatic visualization at all?
+1. The types of visualizations
+2. The types of data-viz tools
+3. Demo & categorize data-viz tools
+4. Your turn!
+5. Final discusison & demonstrations
+
 ```python
 from IPython.display import display
 
@@ -14,10 +23,6 @@ following pacakges as well.
 ```python
 !pip install flexitext==0.2.0
 ```
-
-## Agenda
-
-1. 
 
 ## Types of Visualizations
 - Exploratory
