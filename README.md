@@ -1,7 +1,7 @@
 # How do I even get started with Data Visualization?
 **[American Geophysical Union](https://www.agu.org/) in partnership with [Don’t Use This Code](https://dutc.io)**
 
-*Tuesday, July 16, 2024 at 2pm US/Eastern*
+*Friday, August 2, 2024 at 10am US/Eastern*
 
 Welcome to the workshop: “How do I even get started with Data Visualization”
 
@@ -12,7 +12,8 @@ In order to follow along with today’s presentation we have provided 2 options 
 Google Colab is an online notebook-style editor for you to interactively run Python code in.
 In order to get started with Google Colab, you may use the below link:
 
-[Open Notes In Colab](https://colab.research.google.com/gist/camriddell/bfbe9c7425e230bcfe3c246f21c3329f/notes-2024-07-16.ipynb)
+[Open Notes In Colab](https://colab.research.google.com/gist/camriddell/bfbe9c7425e230bcfe3c246f21c3329f/notes-2024-08-01.ipynb
+)
 
 *Note* that you will need to sign into your Google Account to execute the notebook.
 

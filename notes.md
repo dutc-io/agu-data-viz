@@ -1,5 +1,8 @@
 # How do I even get started with Data Visualization?
 
+If you are working in Google Colab, **make sure to save or download this
+notebook!** If you leave this page, your work may be lost.
+
 ## Agenda
 
 0. Why bother with programmatic visualization at all?
@@ -21,7 +24,7 @@ Google Colab comes with many Python packages pre-installed, but we will need the
 following pacakges as well.
 
 ```python
-!pip install flexitext==0.2.0
+!pip install flexitext==0.2.0 jupyter_bokeh
 ```
 
 ## Types of Visualizations
@@ -229,7 +232,6 @@ show()
 
 *Limited Communicatve Ability unless STRONGLY guided*
 
-**bokeh & panel** - a powerful way to share your data on the web!
 
 ```python
 from panel import extension
@@ -242,6 +244,34 @@ css = '''
 '''
 extension(raw_css=[css]) # Connect `panel` application to notebook runtime
 ```
+
+**Holoviews for convenience & rapid exploration**
+
+```python
+from numpy import linspace
+from scipy.stats import skewnorm
+
+from panel import Column
+import holoviews as hv
+
+def skewnorm_view(loc, scale, skew):
+    return hv.Area((x, skewnorm.pdf(x=x, a=skew, loc=loc, scale=scale)))
+
+x = linspace(-10, 10, 500)
+dimensions = [
+    hv.Dimension('loc',   default=0, range=(-3, 3)),
+    hv.Dimension('scale', default=1, range=(.1, 8)),
+    hv.Dimension('skew',  default=0, range=(-6, 6)),
+]
+dmap = (
+    hv.DynamicMap(skewnorm_view, kdims=dimensions)
+    .opts(alpha=.5)
+)
+
+Column(dmap).servable()
+```
+
+**bokeh & panel** - more customizable than pure Holoviews!
 
 ```python
 from panel import Column
@@ -373,13 +403,17 @@ types of charts one can create given various types of data.
 - Tutorial: http://r-statistics.co/Complete-Ggplot2-Tutorial-Part1-With-R-Code.html (note that plotnine does not have official tutorials, so please refer to ggplot2)
 - Examples: https://plotnine.readthedocs.io/en/stable/gallery.html#
 
-**Bokeh**
-- Tutorial: https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps
-- Examples: https://docs.bokeh.org/en/latest/docs/gallery.html#gallery
-
 **Seaborn**
 - Tutorial: https://seaborn.pydata.org/tutorial/introduction.html
 - Examples: https://seaborn.pydata.org/examples/index.html
+
+**Holoviews**
+- User Guide: https://holoviews.org/user_guide/index.html
+- Examples: https://holoviews.org/gallery/index.html
+
+**Bokeh**
+- Tutorial: https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps
+- Examples: https://docs.bokeh.org/en/latest/docs/gallery.html#gallery
 
 ## Your Turn…
 
